@@ -94,53 +94,8 @@ body { font-family: Arial, sans-serif; }
   font-weight: bold;
 }
 
-.god-card__sphere, .god-modal__sphere { color: #805b20; font-weight: bold; }
-.god-card .btn-primary, .god-modal .btn-primary { color: $navy; font-weight: bold; }
-
-.god-modal {
-  .modal-header { background: $navy; color: white; }
-  .btn-close { filter: invert(1); }
-}
-
-.god-modal__image {
-  width: 100%;
-  max-height: 450px;
-  object-fit: cover;
-  object-position: top;
-  border-radius: .5rem;
-}
-
-.god-modal__fact {
-  display: grid;
-  grid-template-columns: minmax(7rem, 30%) 1fr;
-  gap: .6rem;
-  padding: .6rem 0;
-  background: transparent;
-  overflow-wrap: anywhere;
-
-  strong { color: $navy; }
-}
-
-.god-modal__help {
-  width: fit-content;
-  padding: 0;
-  border: 0;
-  border-bottom: 1px dashed $gold;
-  background: none;
-  color: $navy;
-  font: inherit;
-  font-weight: bold;
-  text-align: left;
-  cursor: help;
-}
-
-.god-modal__position { color: #64748b; }
-
-.site-footer {
-  padding: 1.5rem 0;
-  border-top: 1px solid #d6c7a6;
-  color: #64748b;
-}
+.god-card__sphere { color: #805b20; font-weight: bold; }
+.god-card .btn-primary { color: $navy; font-weight: bold; }
 
 .social-link {
   display: inline-grid;
@@ -152,18 +107,3 @@ body { font-family: Arial, sans-serif; }
   background: white;
 }
 .social-icon { width: 29px; height: 29px; object-fit: contain; }
-
-@media (max-width: 575.98px) {
-  .god-modal__fact { grid-template-columns: 1fr; gap: 0; }
-}
-
-.loading-icon {
-  display: inline-block;
-  transform-origin: center;
-  animation: continuous-spin 1.1s linear infinite;
-}
-
-@keyframes continuous-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
