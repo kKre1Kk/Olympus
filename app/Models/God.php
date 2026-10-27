@@ -33,13 +33,6 @@ class God extends Model
         );
     }
 
-    protected function createdAt(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? Carbon::parse($value)->format('d.m.Y H:i') : null,
-            set: fn ($value) => Carbon::parse($value)->format('Y-m-d H:i:s')
-        );
-    }
     protected function recordedAt(): Attribute
     {
         return Attribute::make(

@@ -59,47 +59,7 @@
                 </div>
             </div>
         </footer>
-
-        <div class="modal fade god-modal" role="dialog" id="godModal" tabindex="-1" aria-labelledby="godModalTitle" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="modal-title fs-4" id="godModalTitle">Информация о боге</h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-3">
-                            <div class="col-12 col-lg-5">
-                                <img class="img-fluid god-modal__image" alt="" width="960" height="1393">
-                            </div>
-                            <div class="col-12 col-lg-7">
-                                <p class="god-modal__sphere mb-2"></p>
-                                <p class="god-modal__description"></p>
-                                <h3 class="fs-6 fw-bold">Факты</h3>
-                                <ul class="list-group list-group-flush" id="godModalFacts"></ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-between gap-2">
-                        <span class="small god-modal__position" aria-live="polite"></span>
-                        <span class="small text-secondary d-none d-sm-inline">Переключение: ← →</span>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-            <div id="downloadToast" class="toast" role="status" aria-live="polite" aria-atomic="true">
-                <div class="toast-header">
-                    <i class="fa-solid fa-spinner loading-icon me-2" aria-hidden="true"></i>
-                    <strong class="me-auto">Olympus</strong>
-                    <small>Уведомление</small>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button>
-                </div>
-                <div class="toast-body">На данный момент функция загрузки недоступна.</div>
-            </div>
-        </div>
+        
         <script src="{{ asset('js/app.js') }}" defer></script>
     </body>
 </html>

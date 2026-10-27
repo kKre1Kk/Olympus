@@ -62,7 +62,6 @@
             </div>
         </div>
     </main>
-</body>
 <footer class="site-footer">
     <div class="container d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3">
         <span>Яковенко Кирилл. Лабораторная работа №3</span>
@@ -80,4 +79,5 @@
         </div>
     </div>
 </footer>
+</body>
 </html>
