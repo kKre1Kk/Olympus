@@ -15,7 +15,7 @@
                         <span class="logo-icon" aria-hidden="true">Ω</span>
                         <span>Olympus</span>
                     </a>
-                    <button type="button" class="btn header-more show-toast">Загрузить</button>
+                    <a href="{{ route('gods.create') }}" class="btn header-more">Добавить</a>
                 </div>
             </nav>
         </header>
@@ -26,125 +26,22 @@
                 <p class="main-subtitle">Главные божества древнегреческой мифологии</p>
 
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-wide-4 g-4 justify-content-center god-grid">
-                    <div class="col">
-                        <article class="card god-card">
-                            <div class="god-card__figure">
-                                <img class="card-img-top img-fluid god-card__image" src="{{ asset('storage/gods/zeus.jpg') }}" alt="Статуя Зевса" width="960" height="1393">
-                                <span class="god-card__badge">Бог неба</span>
-                            </div>
-                            <div class="card-body">
-                                <h2 class="card-title">Зевс</h2>
-                                <p class="god-card__sphere">Небо, гром и молнии</p>
-                                <p class="card-text">Верховный бог древнегреческого пантеона, повелитель неба, грома и молний.</p>
-                                <button type="button" class="btn btn-primary show-details mt-auto">Подробнее</button>
-                            </div>
-                            <template class="god-facts">
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Символы</button><span>молния, орёл, дуб</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Родители</strong><span>Кронос и Рея</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Братья и сёстры</strong><span>Посейдон, Аид, Гера, Деметра, Гестия</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Супруга</strong><span>Гера</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Дети</strong><span>Афина, Аполлон, Артемида, Арес, Гермес, Дионис и другие</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Храм</strong><span>храм Зевса в Олимпии</span></li>
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Миф</button><span>борьба олимпийских богов с титанами</span></li>
-                            </template>
-                        </article>
-                    </div>
-
-                    <div class="col">
-                        <article class="card god-card">
-                            <div class="god-card__figure">
-                                <img class="card-img-top img-fluid god-card__image" src="{{ asset('storage/gods/poseidon.jpg') }}" alt="Статуя Посейдона" width="757" height="933">
-                                <span class="god-card__badge">Бог моря</span>
-                            </div>
-                            <div class="card-body">
-                                <h2 class="card-title">Посейдон</h2>
-                                <p class="god-card__sphere">Моря и землетрясения</p>
-                                <p class="card-text">Бог морей и океанов, способный вызывать бури и землетрясения.</p>
-                                <button type="button" class="btn btn-primary show-details mt-auto">Подробнее</button>
-                            </div>
-                            <template class="god-facts">
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Символы</button><span>трезубец, конь, дельфин</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Родители</strong><span>Кронос и Рея</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Братья и сёстры</strong><span>Зевс, Аид, Гера, Деметра, Гестия</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Супруга</strong><span>Амфитрита</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Дети</strong><span>Тритон, Полифем, Пегас и другие</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Храм</strong><span>храм Посейдона на мысе Сунион</span></li>
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Миф</button><span>спор с Афиной за покровительство Аттике</span></li>
-                            </template>
-                        </article>
-                    </div>
-
-                    <div class="col">
-                        <article class="card god-card">
-                            <div class="god-card__figure">
-                                <img class="card-img-top img-fluid god-card__image" src="{{ asset('storage/gods/aid.jpg') }}" alt="Статуя Аида" width="960" height="1516">
-                                <span class="god-card__badge">Бог подземного мира</span>
-                            </div>
-                            <div class="card-body">
-                                <h2 class="card-title">Аид</h2>
-                                <p class="god-card__sphere">Подземный мир и царство мёртвых</p>
-                                <p class="card-text">Владыка подземного мира и царства мёртвых, один из братьев Зевса.</p>
-                                <button type="button" class="btn btn-primary show-details mt-auto">Подробнее</button>
-                            </div>
-                            <template class="god-facts">
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Символы</button><span>Цербер, шлем невидимости, двузубец</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Родители</strong><span>Кронос и Рея</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Братья и сёстры</strong><span>Зевс, Посейдон, Гера, Деметра, Гестия</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Супруга</strong><span>Персефона</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Дети</strong><span>—</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Храм</strong><span>храм Аида в Элиде</span></li>
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Миф</button><span>похищение Персефоны</span></li>
-                            </template>
-                        </article>
-                    </div>
-
-                    <div class="col">
-                        <article class="card god-card">
-                            <div class="god-card__figure">
-                                <img class="card-img-top img-fluid god-card__image" src="{{ asset('storage/gods/hera.jpg') }}" alt="Статуя Геры" width="960" height="1581">
-                                <span class="god-card__badge">Богиня брака</span>
-                            </div>
-                            <div class="card-body">
-                                <h2 class="card-title">Гера</h2>
-                                <p class="god-card__sphere">Брак и семья</p>
-                                <p class="card-text">Богиня брака и семьи, супруга Зевса и царица олимпийских богов.</p>
-                                <button type="button" class="btn btn-primary show-details mt-auto">Подробнее</button>
-                            </div>
-                            <template class="god-facts">
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Символы</button><span>павлин, корона, гранат</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Родители</strong><span>Кронос и Рея</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Братья и сёстры</strong><span>Зевс, Посейдон, Аид, Деметра, Гестия</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Супруг</strong><span>Зевс</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Дети</strong><span>Арес, Геба, Илифия, Гефест</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Храм</strong><span>храм Геры в Олимпии</span></li>
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Миф</button><span>преследование Геракла</span></li>
-                            </template>
-                        </article>
-                    </div>
-
-                    <div class="col">
-                        <article class="card god-card">
-                            <div class="god-card__figure">
-                                <img class="card-img-top img-fluid god-card__image" src="{{ asset('storage/gods/athena.jpg') }}" alt="Статуя Афины" width="960" height="1920">
-                                <span class="god-card__badge">Богиня мудрости</span>
-                            </div>
-                            <div class="card-body">
-                                <h2 class="card-title">Афина</h2>
-                                <p class="god-card__sphere">Мудрость и военная стратегия</p>
-                                <p class="card-text">Богиня мудрости, военной стратегии, ремёсел и покровительница города Афины.</p>
-                                <button type="button" class="btn btn-primary show-details mt-auto">Подробнее</button>
-                            </div>
-                            <template class="god-facts">
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Символы</button><span>сова, копьё, щит, оливковое дерево</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Родители</strong><span>Зевс и Метида</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Братья и сёстры</strong><span>Аполлон, Артемида, Арес, Гермес, Дионис и другие дети Зевса</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Супруг</strong><span>нет</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Дети</strong><span>—</span></li>
-                                <li class="list-group-item god-modal__fact"><strong>Храм</strong><span>Парфенон в Афинах</span></li>
-                                <li class="list-group-item god-modal__fact"><button type="button" class="god-modal__help">Миф</button><span>спор с Посейдоном за покровительство Афинам</span></li>
-                            </template>
-                        </article>
-                    </div>
+                    @foreach ($gods as $god)
+                        <div class="col">
+                            <article class="card god-card">
+                                <div class="god-card__figure">
+                                    <img class="card-img-top img-fluid god-card__image" src="{{ asset('storage/' . $god->image_path) }}" alt="{{ $god->name }}">
+                                    <span class="god-card__badge">{{ $god->badge }}</span>
+                                </div>
+                                <div class="card-body">
+                                    <h2 class="card-title">{{ $god->name }}</h2>
+                                    <p class="god-card__sphere">{{ $god->sphere }}</p>
+                                    <p class="card-text">{{ $god->description }}</p>
+                                    <a href="{{ route('gods.show', $god) }}" class="btn btn-primary mt-auto">Подробнее</a>
+                                </div>
+                            </article>
+                        </div>
+                    @endforeach
                 </div>
             </section>
         </main>
