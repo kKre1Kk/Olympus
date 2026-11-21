@@ -8,17 +8,8 @@
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     </head>
     <body id="top">
-        <header class="site-header">
-            <nav class="navbar navbar-expand-md navbar-dark" aria-label="Главная навигация">
-                <div class="container">
-                    <a class="navbar-brand" href="#top">
-                        <span class="logo-icon" aria-hidden="true">Ω</span>
-                        <span>Olympus</span>
-                    </a>
-                    <a href="{{ route('gods.create') }}" class="btn header-more">Добавить</a>
-                </div>
-            </nav>
-        </header>
+        
+        @include('partials.header')
 
         <main class="page-main">
             <section class="container" id="gods" aria-labelledby="mainTitle">
@@ -36,6 +27,16 @@
                                 <div class="card-body">
                                     <h2 class="card-title">{{ $god->name }}</h2>
                                     <p class="god-card__sphere">{{ $god->sphere }}</p>
+                                    <p>
+                                        Автор:
+                                        @if($god->user)
+                                            <a href="{{ route('users.show', $god->user) }}">
+                                                {{ $god->user->username }}
+                                            </a>
+                                        @else
+                                            Не указан
+                                        @endif
+                                    </p>
                                     <p class="card-text">{{ $god->description }}</p>
                                     <a href="{{ route('gods.show', $god) }}" class="btn btn-primary mt-auto">Подробнее</a>
                                 </div>

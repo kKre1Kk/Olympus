@@ -8,17 +8,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
-    <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark">
-            <div class="container">
-                <a class="navbar-brand" href="{{ route('gods.index') }}">
-                    <span class="logo-icon" aria-hidden="true">Ω</span>
-                    <span>Olympus</span>
-                </a>
-                <a href="{{ route('gods.index') }}" class="btn header-more">На главную</a>
-            </div>
-        </nav>
-    </header>
+    @include('partials.header')
 
     <main class="page-main">
         <div class="container">

@@ -7,17 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
-    <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark">
-            <div class="container">
-                <a class="navbar-brand" href="{{ route('gods.index') }}">
-                    <span class="logo-icon" aria-hidden="true">Ω</span>
-                    <span>Olympus</span>
-                </a>
-                <a href="{{ route('gods.index') }}" class="btn header-more">На главную</a>
-            </div>
-        </nav>
-    </header>
+    @include('partials.header')
     <main class="page-main">
         <div class="container">
             <div class="card god-card">
@@ -32,20 +22,63 @@
                             <h5>{{ $god->sphere }}</h5>
                             <p>{{ $god->description }}</p>
                             <p>Дата добавления: {{ $god->recorded_at ?? 'Не указана' }}</p>
-                            <div class="d-flex gap-2 mb-4">
-                                <a href="{{ route('gods.edit', $god) }}" class="btn btn-primary">
-                                    Изменить
-                                </a>
+                            <p>
+                                Автор:
+                                @if($god->user)
+                                    <a href="{{ route('users.show', $god->user) }}">
+                                        {{ $god->user->username }}
+                                    </a>
+                                @else
+                                    Не указан
+                                @endif
+                            </p>
+                            
+                            @if($god->trashed())
 
-                                <form action="{{ route('gods.destroy', $god) }}" method="POST" onsubmit="return confirm('Удалить этого бога?')">
-                                    @csrf
-                                    @method('DELETE')
+                                <div class="alert alert-warning">
+                                    Этот бог удалён
+                                </div>
 
-                                    <button type="submit" class="btn btn-danger">
-                                        Удалить
-                                    </button>
-                                </form>
-                            </div>
+                                @can('restore-god', $god)
+                                    <form action="{{ route('gods.restore', $god) }}" method="POST">
+                                        @csrf
+                                        <button class="btn btn-success">Восстановить</button>
+                                    </form>
+                                @endcan
+
+                                @can('force-delete-god', $god)
+                                    <form action="{{ route('gods.forceDelete', $god) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger">Удалить навсегда</button>
+                                    </form>
+                                @endcan
+
+                            @else
+
+                                <div class="d-flex gap-2 mb-4">
+
+                                    @can('update-god', $god)
+                                        <a href="{{ route('gods.edit', $god) }}" class="btn btn-primary">
+                                            Изменить
+                                        </a>
+                                    @endcan
+
+                                    @can('delete-god', $god)
+                                        <form action="{{ route('gods.destroy', $god) }}" method="POST"
+                                            onsubmit="return confirm('Удалить этого бога?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">
+                                                Удалить
+                                            </button>
+                                        </form>
+                                    @endcan
+
+                                </div>
+
+                            @endif
+
                             <h3>Факты</h3>
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item"><strong>Символы:</strong> {{ $god->symbols }}</li>

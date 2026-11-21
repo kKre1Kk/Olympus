@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\God;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -12,13 +13,19 @@ class GodController extends Controller
 {
     public function index()
     {
-        $gods = God::all();
+        $gods = God::with('user')->get();
 
         return view('welcome', compact('gods'));
     }
 
     public function show(God $god)
     {
+        if ($god->trashed()) {
+            Gate::authorize('admin');
+        }
+
+        $god->load('user');
+
         return view('gods.show', compact('god'));
     }
 
@@ -49,19 +56,25 @@ class GodController extends Controller
         }
 
         unset($data['image']);
+
         $data['recorded_at'] = today()->toDateString();
-        God::create($data);
+
+        $request->user()->gods()->create($data);
 
         return redirect()->route('gods.index');
     }
 
     public function edit(God $god)
     {
+        Gate::authorize('update-god', $god);
+
         return view('gods.edit', compact('god'));
     }
 
     public function update(Request $request, God $god)
     {
+        Gate::authorize('update-god', $god);
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'badge' => 'required|string|max:255',
@@ -78,7 +91,7 @@ class GodController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-                $data['image_path'] = $this->saveImage($request->file('image'));
+            $data['image_path'] = $this->saveImage($request->file('image'));
         }
 
         unset($data['image']);
@@ -90,11 +103,43 @@ class GodController extends Controller
 
     public function destroy(God $god)
     {
+        Gate::authorize('delete-god', $god);
+
         $god->delete();
 
         return redirect()->route('gods.index');
     }
-    
+
+    public function trashed()
+    {
+        Gate::authorize('admin');
+
+        $gods = God::onlyTrashed()
+            ->with('user')
+            ->latest('deleted_at')
+            ->get();
+
+        return view('gods.trashed', compact('gods'));
+    }
+
+    public function restore(God $god)
+    {
+        Gate::authorize('restore-god', $god);
+
+        $god->restore();
+
+        return redirect()->route('gods.trashed');
+    }
+
+    public function forceDelete(God $god)
+    {
+        Gate::authorize('force-delete-god', $god);
+
+        $god->forceDelete();
+
+        return redirect()->route('gods.trashed');
+    }
+
     private function saveImage(UploadedFile $file): string
     {
         $source = imagecreatefromstring(file_get_contents($file->getRealPath()));
@@ -124,5 +169,4 @@ class GodController extends Controller
 
         return $path;
     }
-
 }
