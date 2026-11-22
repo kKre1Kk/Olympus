@@ -14,10 +14,8 @@
             <h1 class="main-title" id="profileTitle">{{ $user->name }}</h1>
             <p class="main-subtitle">
                 Username: {{ $user->username }}
-                @if ($user->is_admin)
-                    <span class="badge bg-warning text-dark">Администратор</span>
-                @endif
-            </p>
+
+</p>
 
             @if (auth()->id() !== $user->id)
                 @if ($isFriend)

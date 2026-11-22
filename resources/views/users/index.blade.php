@@ -20,11 +20,8 @@
                         <strong>{{ $user->name }}</strong>
                         <span class="text-muted">({{ $user->username }})</span>
 
-                        @if ($user->is_admin)
-                            <span class="badge bg-warning text-dark">Администратор</span>
-                        @endif
 
-                        <span class="badge bg-primary ms-sm-auto">
+<span class="badge bg-primary ms-sm-auto">
                             Объектов: {{ $user->gods_count }}
                         </span>
                     </a>
