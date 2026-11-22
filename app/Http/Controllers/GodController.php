@@ -145,10 +145,10 @@ class GodController extends Controller
 
     private function saveImage(UploadedFile $file): string
     {
-        if (! function_exists('imagecreatefromstring')) {
-            throw new RuntimeException(
-                'Для обработки изображений необходимо включить расширение PHP GD.'
-            );
+        if (! extension_loaded('gd') || ! function_exists('imagecreatefromstring')) {
+            throw ValidationException::withMessages([
+                'image' => 'На сервере не включено расширение PHP GD. Обратитесь к администратору.',
+            ]);
         }
 
         $contents = file_get_contents($file->getRealPath());
