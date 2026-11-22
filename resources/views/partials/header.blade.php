@@ -22,6 +22,14 @@
                     Лента друзей
                 </a>
 
+                <a href="{{ route('friend-requests.index') }}" class="btn header-more">
+                    Заявки
+                    @php($incomingCount = auth()->user()->receivedFriendRequests()->count())
+                    @if ($incomingCount > 0)
+                        <span class="badge bg-danger ms-1">{{ $incomingCount }}</span>
+                    @endif
+                </a>
+
                 <a href="{{ route('users.show', auth()->user()) }}" class="btn header-more">
                     Мой профиль
                 </a>

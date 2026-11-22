@@ -30,6 +30,17 @@ class UserController extends Controller
             ->where('users.id', $user->getKey())
             ->exists();
 
-        return view('users.show', compact('user', 'gods', 'friends', 'isFriend'));
+        $outgoingRequest = auth()->user()->sentFriendRequests()
+            ->where('receiver_id', $user->id)
+            ->first();
+
+        $incomingRequest = auth()->user()->receivedFriendRequests()
+            ->where('sender_id', $user->id)
+            ->first();
+
+        return view('users.show', compact(
+            'user', 'gods', 'friends', 'isFriend',
+            'outgoingRequest', 'incomingRequest'
+        ));
     }
 }

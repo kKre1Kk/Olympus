@@ -5,6 +5,7 @@ use App\Http\Controllers\GodController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FriendController;
+use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\FeedController;
 
 Route::get('/', function () {
@@ -25,6 +26,15 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/gods/{god}/comments', [CommentController::class, 'store'])
         ->name('comments.store');
+
+    Route::get('/friends/requests', [FriendRequestController::class, 'index'])
+        ->name('friend-requests.index');
+
+    Route::post('/friends/requests/{friendRequest}/accept', [FriendRequestController::class, 'accept'])
+        ->name('friend-requests.accept');
+
+    Route::delete('/friends/requests/{friendRequest}', [FriendRequestController::class, 'destroy'])
+        ->name('friend-requests.destroy');
 
     Route::post('/users/{user}/friends', [FriendController::class, 'store'])
         ->name('friends.store');

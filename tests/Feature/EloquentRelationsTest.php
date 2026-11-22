@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\FriendRequest;
 use App\Models\God;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -50,7 +51,7 @@ class EloquentRelationsTest extends TestCase
         $this->assertDatabaseCount('comments', 0);
     }
 
-    public function test_friendship_is_mutual_and_removed_from_both_sides(): void
+    public function test_friendship_requires_acceptance_and_is_mutual(): void
     {
         $alice = User::factory()->create();
         $bob = User::factory()->create();
@@ -59,6 +60,23 @@ class EloquentRelationsTest extends TestCase
             ->post(route('friends.store', $bob))
             ->assertRedirect(route('users.show', $bob));
 
+        $friendRequest = FriendRequest::firstOrFail();
+
+        $this->assertDatabaseHas('friend_requests', [
+            'sender_id' => $alice->id,
+            'receiver_id' => $bob->id,
+        ]);
+        $this->assertDatabaseCount('friendships', 0);
+
+        $this->actingAs($bob)
+            ->get(route('friend-requests.index'))
+            ->assertOk()
+            ->assertSee($alice->username);
+
+        $this->post(route('friend-requests.accept', $friendRequest))
+            ->assertRedirect(route('friend-requests.index'));
+
+        $this->assertDatabaseCount('friend_requests', 0);
         $this->assertDatabaseHas('friendships', [
             'user_id' => $alice->id,
             'friend_id' => $bob->id,
@@ -68,17 +86,89 @@ class EloquentRelationsTest extends TestCase
             'friend_id' => $alice->id,
         ]);
 
-        $this->post(route('friends.store', $bob))->assertRedirect();
-        $this->assertDatabaseCount('friendships', 2);
-
-        $this->actingAs($bob)
-            ->delete(route('friends.destroy', $alice))
+        $this->delete(route('friends.destroy', $alice))
             ->assertRedirect(route('users.show', $alice));
 
         $this->assertDatabaseCount('friendships', 0);
     }
 
-    public function test_user_cannot_add_themselves_as_a_friend(): void
+    public function test_sender_and_strangers_cannot_accept_another_users_request(): void
+    {
+        $alice = User::factory()->create();
+        $bob = User::factory()->create();
+        $stranger = User::factory()->create();
+
+        $this->actingAs($alice)
+            ->post(route('friends.store', $bob))
+            ->assertRedirect();
+
+        $friendRequest = FriendRequest::firstOrFail();
+
+        $this->post(route('friend-requests.accept', $friendRequest))
+            ->assertForbidden();
+
+        $this->actingAs($stranger)
+            ->post(route('friend-requests.accept', $friendRequest))
+            ->assertForbidden();
+
+        $this->delete(route('friend-requests.destroy', $friendRequest))
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('friendships', 0);
+        $this->assertDatabaseCount('friend_requests', 1);
+    }
+
+    public function test_receiver_can_decline_and_sender_can_cancel_requests(): void
+    {
+        $alice = User::factory()->create();
+        $bob = User::factory()->create();
+
+        $this->actingAs($alice)
+            ->post(route('friends.store', $bob))
+            ->assertRedirect();
+
+        $friendRequest = FriendRequest::firstOrFail();
+
+        $this->actingAs($bob)
+            ->delete(route('friend-requests.destroy', $friendRequest))
+            ->assertRedirect(route('friend-requests.index'));
+
+        $this->assertDatabaseCount('friend_requests', 0);
+        $this->assertDatabaseCount('friendships', 0);
+
+        $this->actingAs($alice)
+            ->post(route('friends.store', $bob))
+            ->assertRedirect();
+
+        $friendRequest = FriendRequest::firstOrFail();
+
+        $this->delete(route('friend-requests.destroy', $friendRequest))
+            ->assertRedirect(route('friend-requests.index'));
+
+        $this->assertDatabaseCount('friend_requests', 0);
+        $this->assertDatabaseCount('friendships', 0);
+    }
+
+    public function test_repeated_and_reverse_requests_do_not_create_friendship(): void
+    {
+        $alice = User::factory()->create();
+        $bob = User::factory()->create();
+
+        $this->actingAs($alice)
+            ->post(route('friends.store', $bob))
+            ->assertRedirect();
+
+        $this->post(route('friends.store', $bob))->assertRedirect();
+
+        $this->actingAs($bob)
+            ->post(route('friends.store', $alice))
+            ->assertRedirect(route('friend-requests.index'));
+
+        $this->assertDatabaseCount('friend_requests', 1);
+        $this->assertDatabaseCount('friendships', 0);
+    }
+
+    public function test_user_cannot_send_friend_request_to_themselves(): void
     {
         $user = User::factory()->create();
 
@@ -86,10 +176,11 @@ class EloquentRelationsTest extends TestCase
             ->post(route('friends.store', $user))
             ->assertStatus(422);
 
+        $this->assertDatabaseCount('friend_requests', 0);
         $this->assertDatabaseCount('friendships', 0);
     }
 
-    public function test_feed_contains_only_friends_new_gods_in_date_order(): void
+    public function test_feed_contains_friends_gods_only_after_acceptance(): void
     {
         $viewer = User::factory()->create();
         $friend = User::factory()->create();
@@ -105,11 +196,22 @@ class EloquentRelationsTest extends TestCase
 
         $this->get(route('feed.index'))
             ->assertOk()
+            ->assertDontSee('Новый бог');
+
+        $friendRequest = FriendRequest::firstOrFail();
+
+        $this->actingAs($friend)
+            ->post(route('friend-requests.accept', $friendRequest))
+            ->assertRedirect();
+
+        $this->actingAs($viewer)
+            ->get(route('feed.index'))
+            ->assertOk()
             ->assertSeeInOrder(['Новый бог', 'Старый бог'])
             ->assertDontSee('Чужой бог');
     }
 
-    public function test_comments_from_friends_are_highlighted(): void
+    public function test_comments_from_confirmed_friends_are_highlighted(): void
     {
         $viewer = User::factory()->create();
         $friend = User::factory()->create();
@@ -126,6 +228,17 @@ class EloquentRelationsTest extends TestCase
 
         $this->actingAs($stranger)
             ->post(route('comments.store', $god), ['body' => 'Обычный комментарий'])
+            ->assertRedirect();
+
+        $this->actingAs($viewer)
+            ->get(route('gods.show', $god))
+            ->assertOk()
+            ->assertDontSee('★ Друг');
+
+        $friendRequest = FriendRequest::firstOrFail();
+
+        $this->actingAs($friend)
+            ->post(route('friend-requests.accept', $friendRequest))
             ->assertRedirect();
 
         $response = $this->actingAs($viewer)

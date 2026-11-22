@@ -50,6 +50,16 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function sentFriendRequests(): HasMany
+    {
+        return $this->hasMany(FriendRequest::class, 'sender_id');
+    }
+
+    public function receivedFriendRequests(): HasMany
+    {
+        return $this->hasMany(FriendRequest::class, 'receiver_id');
+    }
+
     public function getRouteKeyName(): string
     {
         return 'username';

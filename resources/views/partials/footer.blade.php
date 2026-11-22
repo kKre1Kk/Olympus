@@ -1,4 +1,4 @@
-<footer class="site-footer bg-dark text-white py-3 mt-5">
+<footer class="site-footer bg-dark text-white py-3">
     <div class="container d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3">
         <span>Яковенко Кирилл. Лабораторная работа №5</span>
 

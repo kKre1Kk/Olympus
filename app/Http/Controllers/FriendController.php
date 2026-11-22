@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FriendRequest;
 use App\Models\Friendship;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -12,14 +13,24 @@ class FriendController extends Controller
 {
     public function store(Request $request, User $user): RedirectResponse
     {
-        abort_if($request->user()->is($user), 422, 'Нельзя добавить себя в друзья.');
+        $sender = $request->user();
 
-        DB::transaction(function () use ($request, $user): void {
-            Friendship::firstOrCreate([
-                'user_id' => $request->user()->getKey(),
-                'friend_id' => $user->getKey(),
-            ]);
-        });
+        abort_if($sender->is($user), 422, 'Нельзя отправить заявку самому себе.');
+
+        if ($sender->friends()->where('users.id', $user->id)->exists()) {
+            return redirect()->route('users.show', $user);
+        }
+
+        if (FriendRequest::query()
+            ->where('sender_id', $user->id)
+            ->where('receiver_id', $sender->id)
+            ->exists()) {
+            return redirect()->route('friend-requests.index');
+        }
+
+        $sender->sentFriendRequests()->firstOrCreate([
+            'receiver_id' => $user->id,
+        ]);
 
         return redirect()->route('users.show', $user);
     }
@@ -28,8 +39,8 @@ class FriendController extends Controller
     {
         DB::transaction(function () use ($request, $user): void {
             Friendship::query()
-                ->where('user_id', $request->user()->getKey())
-                ->where('friend_id', $user->getKey())
+                ->where('user_id', $request->user()->id)
+                ->where('friend_id', $user->id)
                 ->first()?->delete();
         });
 

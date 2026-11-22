@@ -26,10 +26,29 @@
                         @method('DELETE')
                         <button type="submit" class="btn btn-outline-danger">Удалить из друзей</button>
                     </form>
+                @elseif ($incomingRequest)
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <form action="{{ route('friend-requests.accept', $incomingRequest) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success">Принять заявку в друзья</button>
+                        </form>
+                        <form action="{{ route('friend-requests.destroy', $incomingRequest) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-outline-danger">Отклонить заявку</button>
+                        </form>
+                    </div>
+                @elseif ($outgoingRequest)
+                    <form action="{{ route('friend-requests.destroy', $outgoingRequest) }}" method="POST" class="mb-4">
+                        @csrf
+                        @method('DELETE')
+                        <span class="text-muted me-2">Заявка отправлена, ожидается ответ.</span>
+                        <button type="submit" class="btn btn-outline-secondary">Отменить заявку</button>
+                    </form>
                 @else
                     <form action="{{ route('friends.store', $user) }}" method="POST" class="mb-4">
                         @csrf
-                        <button type="submit" class="btn btn-primary">Добавить в друзья</button>
+                        <button type="submit" class="btn btn-primary">Отправить заявку в друзья</button>
                     </form>
                 @endif
             @endif
@@ -97,9 +116,6 @@
                 @endforelse
             </div>
 
-            <a href="{{ route('users.index') }}" class="btn btn-secondary mt-4">
-                К списку пользователей
-            </a>
         </section>
     </main>
 
