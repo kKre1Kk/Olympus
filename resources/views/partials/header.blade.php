@@ -18,6 +18,10 @@
                     Пользователи
                 </a>
 
+                <a href="{{ route('feed.index') }}" class="btn header-more">
+                    Лента друзей
+                </a>
+
                 <a href="{{ route('users.show', auth()->user()) }}" class="btn header-more">
                     Мой профиль
                 </a>

@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GodController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FriendController;
+use App\Http\Controllers\FeedController;
 
 Route::get('/', function () {
     return redirect()->route('gods.index');
@@ -16,6 +19,18 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('gods', GodController::class)
         ->withTrashed(['show']);
+
+    Route::get('/feed', [FeedController::class, 'index'])
+        ->name('feed.index');
+
+    Route::post('/gods/{god}/comments', [CommentController::class, 'store'])
+        ->name('comments.store');
+
+    Route::post('/users/{user}/friends', [FriendController::class, 'store'])
+        ->name('friends.store');
+
+    Route::delete('/users/{user}/friends', [FriendController::class, 'destroy'])
+        ->name('friends.destroy');
 
     Route::get('/users', [UserController::class, 'index'])
         ->name('users.index');

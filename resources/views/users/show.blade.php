@@ -19,6 +19,33 @@
                 @endif
             </p>
 
+            @if (auth()->id() !== $user->id)
+                @if ($isFriend)
+                    <form action="{{ route('friends.destroy', $user) }}" method="POST" class="mb-4">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline-danger">Удалить из друзей</button>
+                    </form>
+                @else
+                    <form action="{{ route('friends.store', $user) }}" method="POST" class="mb-4">
+                        @csrf
+                        <button type="submit" class="btn btn-primary">Добавить в друзья</button>
+                    </form>
+                @endif
+            @endif
+
+            <section class="mb-5" aria-labelledby="friendsTitle">
+                <h2 class="h3 mb-3" id="friendsTitle">Друзья ({{ $friends->count() }})</h2>
+                @forelse ($friends as $friend)
+                    <a href="{{ route('users.show', $friend) }}"
+                       class="badge bg-primary text-decoration-none me-2 mb-2 p-2">
+                        {{ $friend->name }} ({{ $friend->username }})
+                    </a>
+                @empty
+                    <p class="text-muted">Пока нет друзей.</p>
+                @endforelse
+            </section>
+
             <h2 class="h3 mb-4">Объекты пользователя</h2>
 
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">

@@ -93,6 +93,49 @@
                     </div>
                 </div>
             </article>
+
+            <section class="mt-5" aria-labelledby="commentsTitle">
+                <h2 class="h3 mb-4" id="commentsTitle">Комментарии ({{ $god->comments->count() }})</h2>
+
+                @forelse ($god->comments as $comment)
+                    @php($isFriendComment = in_array($comment->user_id, $friendIds))
+
+                    <article class="card mb-3 {{ $isFriendComment ? 'border-warning border-2 bg-warning-subtle' : '' }}">
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                <strong>
+                                    <a href="{{ route('users.show', $comment->user) }}">
+                                        {{ $comment->user->name }}
+                                    </a>
+                                </strong>
+                                @if ($isFriendComment)
+                                    <span class="badge bg-warning text-dark">★ Друг</span>
+                                @endif
+                                <small class="text-muted ms-sm-auto">
+                                    {{ $comment->created_at->format('d.m.Y H:i') }}
+                                </small>
+                            </div>
+                            <p class="mb-0" style="white-space: pre-wrap;">{{ $comment->body }}</p>
+                        </div>
+                    </article>
+                @empty
+                    <p class="text-muted">Комментариев пока нет.</p>
+                @endforelse
+
+                @unless ($god->trashed())
+                    <form action="{{ route('comments.store', $god) }}" method="POST" class="mt-4">
+                        @csrf
+                        <label for="commentBody" class="form-label fw-bold">Оставить комментарий</label>
+                        <textarea id="commentBody" name="body" rows="3" maxlength="2000"
+                                  class="form-control @error('body') is-invalid @enderror"
+                                  required>{{ old('body') }}</textarea>
+                        @error('body')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <button type="submit" class="btn btn-primary mt-3">Отправить комментарий</button>
+                    </form>
+                @endunless
+            </section>
         </div>
     </main>
 

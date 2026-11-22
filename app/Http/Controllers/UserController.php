@@ -25,6 +25,11 @@ class UserController extends Controller
 
         $gods = $query->get();
 
-        return view('users.show', compact('user', 'gods'));
+        $friends = $user->friends()->orderBy('name')->get();
+        $isFriend = auth()->user()->friends()
+            ->where('users.id', $user->getKey())
+            ->exists();
+
+        return view('users.show', compact('user', 'gods', 'friends', 'isFriend'));
     }
 }

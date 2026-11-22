@@ -28,9 +28,16 @@ class GodController extends Controller
             Gate::authorize('admin');
         }
 
-        $god->load('user');
+        $god->load([
+            'user',
+            'comments' => fn ($query) => $query->with('user')
+                ->latest('created_at')
+                ->latest('id'),
+        ]);
 
-        return view('gods.show', compact('god'));
+        $friendIds = auth()->user()->friends()->pluck('users.id')->all();
+
+        return view('gods.show', compact('god', 'friendIds'));
     }
 
     public function create(): View
