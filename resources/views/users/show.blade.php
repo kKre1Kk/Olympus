@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -8,95 +7,76 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
+    @include('partials.header')
 
-@include('partials.header')
+    <main class="page-main">
+        <section class="container" aria-labelledby="profileTitle">
+            <h1 class="main-title" id="profileTitle">{{ $user->name }}</h1>
+            <p class="main-subtitle">
+                Username: {{ $user->username }}
+                @if ($user->is_admin)
+                    <span class="badge bg-warning text-dark">Администратор</span>
+                @endif
+            </p>
 
-<main class="page-main">
-    <div class="container">
+            <h2 class="h3 mb-4">Объекты пользователя</h2>
 
-        <h1 class="main-title">{{ $user->name }}</h1>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                @forelse ($gods as $god)
+                    <div class="col">
+                        <article class="card god-card">
+                            <div class="god-card__figure">
+                                @if ($god->image_path)
+                                    <img class="card-img-top img-fluid god-card__image"
+                                         src="{{ asset('storage/' . $god->image_path) }}"
+                                         alt="{{ $god->name }}">
+                                @endif
+                                <span class="god-card__badge">{{ $god->badge }}</span>
+                            </div>
 
-        <p>Username: {{ $user->username }}</p>
+                            <div class="card-body">
+                                <h3 class="card-title">{{ $god->name }}</h3>
+                                <p class="god-card__sphere">{{ $god->sphere }}</p>
 
-        <h2 class="mt-4 mb-4">Боги пользователя</h2>
+                                @if ($god->trashed())
+                                    <span class="badge bg-danger mb-2">Удалён</span>
 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                                    @can('restore-god', $god)
+                                        <form action="{{ route('gods.restore', $god) }}" method="POST" class="mb-2">
+                                            @csrf
+                                            <button class="btn btn-success">Восстановить</button>
+                                        </form>
+                                    @endcan
 
-            @forelse($gods as $god)
+                                    @can('force-delete-god', $god)
+                                        <form action="{{ route('gods.forceDelete', $god) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-danger">Удалить навсегда</button>
+                                        </form>
+                                    @endcan
+                                @else
+                                    <a href="{{ route('gods.show', $god) }}" class="btn btn-primary mt-auto">
+                                        Подробнее
+                                    </a>
+                                @endif
+                            </div>
+                        </article>
+                    </div>
+                @empty
+                    <div class="col-12">
+                        <p>У пользователя пока нет объектов.</p>
+                    </div>
+                @endforelse
+            </div>
 
-                <div class="col">
-                    <article class="card god-card">
+            <a href="{{ route('users.index') }}" class="btn btn-secondary mt-4">
+                К списку пользователей
+            </a>
+        </section>
+    </main>
 
-                        <div class="god-card__figure">
-                            @if($god->image_path)
-                                <img
-                                    class="card-img-top img-fluid god-card__image"
-                                    src="{{ asset('storage/' . $god->image_path) }}"
-                                    alt="{{ $god->name }}"
-                                >
-                            @endif
-
-                            <span class="god-card__badge">
-                                {{ $god->badge }}
-                            </span>
-                        </div>
-
-                        <div class="card-body">
-
-                            <h3 class="card-title">{{ $god->name }}</h3>
-
-                            <p class="god-card__sphere">
-                                {{ $god->sphere }}
-                            </p>
-
-                            @if($god->trashed())
-
-                                <span class="badge bg-danger">Удалён</span>
-
-                                @can('restore-god', $god)
-                                    <form action="{{ route('gods.restore', $god) }}"
-                                          method="POST" class="mt-2">
-                                        @csrf
-                                        <button class="btn btn-success">
-                                            Восстановить
-                                        </button>
-                                    </form>
-                                @endcan
-
-                                @can('force-delete-god', $god)
-                                    <form action="{{ route('gods.forceDelete', $god) }}"
-                                          method="POST" class="mt-2">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger">
-                                            Удалить навсегда
-                                        </button>
-                                    </form>
-                                @endcan
-
-                            @else
-
-                                <a href="{{ route('gods.show', $god) }}"
-                                   class="btn btn-primary mt-auto">
-                                    Подробнее
-                                </a>
-
-                            @endif
-
-                        </div>
-                    </article>
-                </div>
-
-            @empty
-
-                <p>У пользователя пока нет богов.</p>
-
-            @endforelse
-
-        </div>
-
-    </div>
-</main>
-
+    @include('partials.footer')
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </body>
 </html>

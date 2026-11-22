@@ -3,12 +3,62 @@
 namespace Database\Seeders;
 
 use App\Models\God;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // При повторном запуске сидера администратором остаётся только admin.
+        User::query()->update(['is_admin' => false]);
+
+        $admin = User::query()
+            ->where('username', 'admin')
+            ->orWhere('email', 'admin@olympus.test')
+            ->first() ?? new User();
+
+        $admin->fill([
+            'name' => 'Администратор Olympus',
+            'username' => 'admin',
+            'email' => 'admin@olympus.test',
+        ]);
+        $admin->forceFill([
+            'password' => 'password',
+            'email_verified_at' => now(),
+            'is_admin' => true,
+        ]);
+        $admin->save();
+
+        // Обычные пользователи нужны для проверки разделения объектов по владельцам.
+        $demoUsers = [
+            [
+                'name' => 'Афина',
+                'username' => 'athena',
+                'email' => 'athena@olympus.test',
+            ],
+            [
+                'name' => 'Посейдон',
+                'username' => 'poseidon',
+                'email' => 'poseidon@olympus.test',
+            ],
+        ];
+
+        foreach ($demoUsers as $attributes) {
+            $user = User::query()
+                ->where('username', $attributes['username'])
+                ->orWhere('email', $attributes['email'])
+                ->first() ?? new User();
+
+            $user->fill($attributes);
+            $user->forceFill([
+                'password' => 'password',
+                'email_verified_at' => now(),
+                'is_admin' => false,
+            ]);
+            $user->save();
+        }
+
         $gods = [
             [
                 'name' => 'Зевс',
@@ -22,7 +72,7 @@ class DatabaseSeeder extends Seeder
                 'children' => 'Афина, Аполлон, Артемида, Арес, Гермес, Дионис и другие',
                 'temple' => 'храм Зевса в Олимпии',
                 'myth' => 'борьба олимпийских богов с титанами',
-                'image_path' => 'gods/zeus.jpg'
+                'image_path' => 'gods/zeus.jpg',
             ],
             [
                 'name' => 'Посейдон',
@@ -36,7 +86,7 @@ class DatabaseSeeder extends Seeder
                 'children' => 'Тритон, Полифем, Пегас и другие',
                 'temple' => 'храм Посейдона на мысе Сунион',
                 'myth' => 'спор с Афиной за покровительство Аттике',
-                'image_path' => 'gods/poseidon.jpg'
+                'image_path' => 'gods/poseidon.jpg',
             ],
             [
                 'name' => 'Аид',
@@ -50,7 +100,7 @@ class DatabaseSeeder extends Seeder
                 'children' => '—',
                 'temple' => 'храм Аида в Элиде',
                 'myth' => 'похищение Персефоны',
-                'image_path' => 'gods/aid.jpg'
+                'image_path' => 'gods/aid.jpg',
             ],
             [
                 'name' => 'Гера',
@@ -64,7 +114,7 @@ class DatabaseSeeder extends Seeder
                 'children' => 'Арес, Геба, Илифия, Гефест',
                 'temple' => 'храм Геры в Олимпии',
                 'myth' => 'преследование Геракла',
-                'image_path' => 'gods/hera.jpg'
+                'image_path' => 'gods/hera.jpg',
             ],
             [
                 'name' => 'Афина',
@@ -78,13 +128,34 @@ class DatabaseSeeder extends Seeder
                 'children' => '—',
                 'temple' => 'Парфенон в Афинах',
                 'myth' => 'спор с Посейдоном за покровительство Афинам',
-                'image_path' => 'gods/athena.jpg'
-            ]
+                'image_path' => 'gods/athena.jpg',
+            ],
         ];
 
-        foreach ($gods as $god) {
-            $god['recorded_at'] = today()->toDateString();
-            God::firstOrCreate(['name' => $god['name']], $god);
-        }
+        // Модельные события проверяют права пользователя. Сидер запускается из CLI,
+        // поэтому на время заполнения данных эти события отключаются.
+        God::withoutEvents(function () use ($gods, $admin): void {
+            foreach ($gods as $attributes) {
+                $attributes['recorded_at'] = today()->toDateString();
+
+                $god = God::withTrashed()->firstOrNew([
+                    'name' => $attributes['name'],
+                ]);
+
+                $god->fill($attributes);
+                $god->user()->associate($admin);
+
+                if ($god->trashed()) {
+                    $god->restore();
+                }
+
+                $god->save();
+            }
+
+            // Старые записи, созданные до появления авторизации, получают владельца.
+            God::withTrashed()
+                ->whereNull('user_id')
+                ->update(['user_id' => $admin->getKey()]);
+        });
     }
 }

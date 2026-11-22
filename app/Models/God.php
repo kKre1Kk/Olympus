@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 class God extends Model
@@ -25,8 +25,15 @@ class God extends Model
         'temple',
         'myth',
         'image_path',
-        'recorded_at'
+        'recorded_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'integer',
+        ];
+    }
 
     public function user(): BelongsTo
     {
@@ -35,7 +42,7 @@ class God extends Model
 
     protected static function booted(): void
     {
-        static::updating(function (God $god) {
+        static::updating(function (God $god): void {
             $user = auth()->user();
 
             abort_unless(
@@ -44,7 +51,7 @@ class God extends Model
             );
         });
 
-        static::deleting(function (God $god) {
+        static::deleting(function (God $god): void {
             $user = auth()->user();
 
             abort_unless(
@@ -53,11 +60,11 @@ class God extends Model
             );
         });
 
-        static::restoring(function () {
+        static::restoring(function (): void {
             abort_unless(auth()->user()?->is_admin, 403);
         });
 
-        static::forceDeleting(function () {
+        static::forceDeleting(function (): void {
             abort_unless(auth()->user()?->is_admin, 403);
         });
     }

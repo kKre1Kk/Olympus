@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -17,10 +16,7 @@
         </div>
     </main>
 
-    <footer class="site-footer">
-        <div class="container">
-            <span>Яковенко Кирилл. Лабораторная работа №3</span>
-        </div>
-    </footer>
+    @include('partials.footer')
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </body>
 </html>

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -8,35 +7,35 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
+    @include('partials.header')
 
-@include('partials.header')
+    <main class="page-main">
+        <section class="container" aria-labelledby="usersTitle">
+            <h1 class="main-title" id="usersTitle">Пользователи Olympus</h1>
 
-<main class="page-main">
-    <div class="container">
+            <div class="list-group">
+                @forelse ($users as $user)
+                    <a href="{{ route('users.show', $user) }}"
+                       class="list-group-item list-group-item-action d-flex flex-wrap align-items-center gap-2">
+                        <strong>{{ $user->name }}</strong>
+                        <span class="text-muted">({{ $user->username }})</span>
 
-        <h1 class="main-title">Пользователи Olympus</h1>
+                        @if ($user->is_admin)
+                            <span class="badge bg-warning text-dark">Администратор</span>
+                        @endif
 
-        <div class="list-group">
-            @foreach($users as $user)
-                <a href="{{ route('users.show', $user) }}"
-                   class="list-group-item list-group-item-action">
+                        <span class="badge bg-primary ms-sm-auto">
+                            Объектов: {{ $user->gods_count }}
+                        </span>
+                    </a>
+                @empty
+                    <p>Пользователей пока нет.</p>
+                @endforelse
+            </div>
+        </section>
+    </main>
 
-                    <strong>{{ $user->name }}</strong>
-
-                    <span class="text-muted">
-                        ({{ $user->username }})
-                    </span>
-
-                    <span class="badge bg-primary">
-                        Богов: {{ $user->gods_count }}
-                    </span>
-
-                </a>
-            @endforeach
-        </div>
-
-    </div>
-</main>
-
+    @include('partials.footer')
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </body>
 </html>
