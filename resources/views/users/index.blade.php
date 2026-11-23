@@ -19,9 +19,7 @@
                        class="list-group-item list-group-item-action d-flex flex-wrap align-items-center gap-2">
                         <strong>{{ $user->name }}</strong>
                         <span class="text-muted">({{ $user->username }})</span>
-
-
-<span class="badge bg-primary ms-sm-auto">
+                        <span class="badge bg-primary ms-sm-auto">
                             Объектов: {{ $user->gods_count }}
                         </span>
                     </a>

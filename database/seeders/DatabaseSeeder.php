@@ -10,27 +10,21 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // При повторном запуске сидера администратором остаётся только admin.
-        User::query()->update(['is_admin' => false]);
+        $admin = User::query()->firstOrNew(['username' => 'admin']);
 
-        $admin = User::query()
-            ->where('username', 'admin')
-            ->orWhere('email', 'admin@olympus.test')
-            ->first() ?? new User();
+        if (! $admin->exists) {
+            $admin->fill([
+                'name' => 'Администратор Olympus',
+                'email' => 'admin@olympus.test',
+                'password' => 'password',
+            ]);
+            $admin->forceFill([
+                'email_verified_at' => now(),
+                'is_admin' => true,
+            ]);
+            $admin->save();
+        }
 
-        $admin->fill([
-            'name' => 'Администратор Olympus',
-            'username' => 'admin',
-            'email' => 'admin@olympus.test',
-        ]);
-        $admin->forceFill([
-            'password' => 'password',
-            'email_verified_at' => now(),
-            'is_admin' => true,
-        ]);
-        $admin->save();
-
-        // Обычные пользователи нужны для проверки разделения объектов по владельцам.
         $demoUsers = [
             [
                 'name' => 'Афина',
@@ -45,17 +39,14 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($demoUsers as $attributes) {
-            $user = User::query()
-                ->where('username', $attributes['username'])
-                ->orWhere('email', $attributes['email'])
-                ->first() ?? new User();
+            $user = User::query()->firstOrNew(['username' => $attributes['username']]);
 
-            $user->fill($attributes);
-            $user->forceFill([
-                'password' => 'password',
-                'email_verified_at' => now(),
-                'is_admin' => false,
-            ]);
+            if ($user->exists) {
+                continue;
+            }
+
+            $user->fill($attributes + ['password' => 'password']);
+            $user->forceFill(['email_verified_at' => now()]);
             $user->save();
         }
 
@@ -132,30 +123,14 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
-        // Модельные события проверяют права пользователя. Сидер запускается из CLI,
-        // поэтому на время заполнения данных эти события отключаются.
-        God::withoutEvents(function () use ($gods, $admin): void {
-            foreach ($gods as $attributes) {
-                $attributes['recorded_at'] = today()->toDateString();
-
-                $god = God::withTrashed()->firstOrNew([
-                    'name' => $attributes['name'],
-                ]);
-
-                $god->fill($attributes);
-                $god->user()->associate($admin);
-
-                if ($god->trashed()) {
-                    $god->restore();
-                }
-
-                $god->save();
+        foreach ($gods as $attributes) {
+            if (God::withTrashed()->where('name', $attributes['name'])->exists()) {
+                continue;
             }
 
-            // Старые записи, созданные до появления авторизации, получают владельца.
-            God::withTrashed()
-                ->whereNull('user_id')
-                ->update(['user_id' => $admin->getKey()]);
-        });
+            $admin->gods()->create($attributes + [
+                'recorded_at' => today()->toDateString(),
+            ]);
+        }
     }
 }
